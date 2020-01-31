@@ -35,7 +35,7 @@ import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.ReadableMap;
 
 public class Braintree extends ReactContextBaseJavaModule implements ActivityEventListener {
-    private static final int PAYMENT_REQUEST = 1706816330;
+    private static final int PAYMENT_REQUEST = 65535;
     private String token;
 
     private Callback successCallback;
