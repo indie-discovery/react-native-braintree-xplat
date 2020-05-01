@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '10.0'
   s.tvos.deployment_target = '10.0'
 
-  s.dependency 'Braintree', '4.11.0'
+  s.dependency 'Braintree', '4.33.0'
   s.dependency 'BraintreeDropIn'
   s.dependency 'Braintree/PayPal'
   s.dependency 'Braintree/Apple-Pay', '4.11.0'
