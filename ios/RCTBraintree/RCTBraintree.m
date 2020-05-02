@@ -269,9 +269,7 @@ RCT_EXPORT_METHOD(showApplePayViewController:(NSDictionary *)options callback:(R
         self.callback(@[[NSNull null], paymentMethodNonce.nonce]);
     }
     
-    if (!self.threeDSecure) {
-        [self.reactRoot dismissViewControllerAnimated:YES completion:nil];
-    }
+    [self.reactRoot dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)dropInViewControllerDidCancel:(__unused BTDropInViewController *)viewController {
