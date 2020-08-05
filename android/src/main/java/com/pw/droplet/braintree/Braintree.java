@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import android.content.Intent;
 import android.content.Context;
 import android.app.Activity;
+import android.widget.Toast;
 
 import com.braintreepayments.api.ThreeDSecure;
 import com.braintreepayments.api.PaymentRequest;
@@ -31,8 +32,23 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.BaseActivityEventListener;
+import com.facebook.react.bridge.ReadableArray;
+
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wallet.AutoResolveHelper;
+import com.google.android.gms.wallet.IsReadyToPayRequest;
+import com.google.android.gms.wallet.PaymentData;
+import com.google.android.gms.wallet.PaymentDataRequest;
+import com.google.android.gms.wallet.PaymentsClient;
+import com.google.android.gms.wallet.Wallet;
+import com.google.android.gms.wallet.WalletConstants;
 
 public class Braintree extends ReactContextBaseJavaModule implements ActivityEventListener {
     private static final int PAYMENT_REQUEST = 65535;
@@ -42,13 +58,21 @@ public class Braintree extends ReactContextBaseJavaModule implements ActivityEve
     private Callback errorCallback;
 
     private Context mActivityContext;
+    private ReactApplicationContext rContext;
+    private GPay gPay;
 
     private BraintreeFragment mBraintreeFragment;
 
     private ReadableMap threeDSecureOptions;
 
+    private static final String ENVIRONMENT_PRODUCTION_KEY = "ENVIRONMENT_PRODUCTION";
+
+    private static final String ENVIRONMENT_TEST_KEY = "ENVIRONMENT_TEST";
+
     public Braintree(ReactApplicationContext reactContext) {
         super(reactContext);
+        this.rContext = reactContext;
+        this.gPay = new GPay(reactContext);
         reactContext.addActivityEventListener(this);
     }
 
@@ -294,5 +318,28 @@ public class Braintree extends ReactContextBaseJavaModule implements ActivityEve
     }
 
     public void onNewIntent(Intent intent) {
+    }
+
+    /**
+     * Google Pay Implementation
+     */
+    @Override
+    public Map<String, Object> getConstants() {
+        final Map<String, Object> constants = new HashMap<>();
+        constants.put(ENVIRONMENT_PRODUCTION_KEY, WalletConstants.ENVIRONMENT_PRODUCTION);
+        constants.put(ENVIRONMENT_TEST_KEY, WalletConstants.ENVIRONMENT_TEST);
+        return constants;
+    }
+
+    @ReactMethod
+    public void checkGPayIsEnable(int environment, ReadableArray cardNetworks, final Promise promise) {
+        this.gPay.checkGPayIsEnable(environment, cardNetworks, promise, getCurrentActivity());
+        return;
+    }
+
+    @ReactMethod
+    public void showGooglePayViewController(int environment, ReadableMap requestData, final Promise promise) {
+        this.gPay.show(environment, requestData, promise, getCurrentActivity());
+        return;
     }
 }

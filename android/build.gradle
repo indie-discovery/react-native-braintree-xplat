@@ -1,12 +1,37 @@
 apply plugin: "com.android.library"
 
+buildscript {
+    repositories {
+        // Gradle 4.1 and higher include support for Google's Maven repo using
+        // the google() method. And you need to include this repo to download
+        // Android Gradle plugin 3.0.0 or higher.
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.2'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenLocal()
+        jcenter()
+        maven {
+            url "https://jitpack.io"
+        }
+        maven { url "$rootDir/../node_modules/react-native/android" } // All of React Native (JS, Android binaries) is installed from npm
+    }
+}
+
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 29
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 22
+        minSdkVersion 19
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
     }
@@ -23,5 +48,7 @@ dependencies {
     implementation "com.facebook.react:react-native:+"
     implementation 'com.braintreepayments.api:braintree:2.+'
     implementation 'com.braintreepayments.api:drop-in:2.+'
+    implementation 'com.google.android.gms:play-services-wallet:16.0.0'
+    implementation 'com.android.support:appcompat-v7:24.1.1'
     implementation group: 'com.google.code.gson', name: 'gson', version: '2.3.1'
 }
