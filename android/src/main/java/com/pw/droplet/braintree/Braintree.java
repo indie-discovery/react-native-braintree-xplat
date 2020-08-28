@@ -5,7 +5,10 @@ import java.util.HashMap;
 
 import android.util.Log;
 
+import com.braintreepayments.api.GooglePayment;
 import com.braintreepayments.api.interfaces.BraintreeCancelListener;
+import com.braintreepayments.api.models.GooglePaymentRequest;
+import com.google.android.gms.wallet.TransactionInfo;
 import com.google.gson.Gson;
 
 import android.content.Intent;
@@ -338,8 +341,26 @@ public class Braintree extends ReactContextBaseJavaModule implements ActivityEve
     }
 
     @ReactMethod
-    public void showGooglePayViewController(int environment, ReadableMap requestData, final Promise promise) {
-        this.gPay.show(environment, requestData, promise, getCurrentActivity());
+    public void showGooglePayViewController(String environment, ReadableMap requestData, final Callback successCallback, final Callback errorCallback) {
+        // environment = PRODUCTION / TEST
+        this.successCallback = successCallback;
+        this.errorCallback = errorCallback;
+
+        ReadableMap transaction = requestData.getMap("transaction");
+        String merchantId = requestData.getString("merchantId");
+        Log.e("totalPrice", transaction.getString("totalPrice"));
+        Log.e("currencyCode", transaction.getString("currencyCode"));
+        
+        GooglePaymentRequest googlePaymentRequest = new GooglePaymentRequest()
+                .transactionInfo(TransactionInfo.newBuilder()
+                        .setTotalPrice(transaction.getString("totalPrice"))
+                        .setTotalPriceStatus(WalletConstants.TOTAL_PRICE_STATUS_FINAL)
+                        .setCurrencyCode(transaction.getString("currencyCode"))
+                        .build())
+                .environment(environment)
+                .googleMerchantId(merchantId);
+        GooglePayment.requestPayment(this.mBraintreeFragment, googlePaymentRequest);
+        // this.gPay.show(environment, requestData, promise, getCurrentActivity());
         return;
     }
 }
