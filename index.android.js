@@ -62,6 +62,14 @@ module.exports = {
   },
 
   showGooglePayViewController(environment, requestData) {
-    return Braintree.showGooglePayViewController(environment, requestData);
+    return new Promise(function (resolve, reject) {
+      Braintree.showGooglePayViewController(
+        environment, 
+        requestData,
+        (data) => resolve(data),
+        (err) => reject(err)
+      );
+    });
+    // return Braintree.showGooglePayViewController(environment, requestData);
   },
 };
